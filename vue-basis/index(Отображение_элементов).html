@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue JS</title>
+</head>
+<body>
+
+<!--<div id="app">-->
+  <!--<h2 v-if="isVisible">Kappa</h2>-->
+  <!--<h2 v-else>Not Kappa</h2>-->
+  <!--&lt;!&ndash;<h2 v-if="!isVisible">Not Kappa</h2>&ndash;&gt;-->
+
+  <!--<button @click="isVisible = !isVisible">Flag</button>-->
+<!--</div>-->
+
+<div id="app">
+  <h2 v-if="type === 'a'">A</h2>
+  <h2 v-else-if="type === 'b'">B</h2>
+  <h2 v-else-if="type === 'c'">C</h2>
+  <h2 v-else>Unlucky</h2>
+
+  <input type="text" v-model="type">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!--<script>-->
+  <!--var app = new Vue({-->
+  <!--el: '#app',-->
+  <!--data: {-->
+    <!--isVisible: 'true',-->
+  <!--},-->
+  <!--computed: {-->
+
+  <!--},-->
+  <!--methods: {-->
+
+  <!--}-->
+<!--})-->
+<!--</script>-->
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      type:'a'
+    },
+    computed: {
+
+    },
+    methods: {
+
+    }
+  })
+</script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue JS</title>
+</head>
+<body>
+
+<div id="app">
+  <ul>
+    <li v-for="(person, index) in people">{{ index + 1 }} {{ person }}</li>
+  </ul>
+  <hr>
+  <ul>
+    <li v-for="(person, index) in objpeople">{{ index + 1 }} {{ person.name }} - <b>{{ person.age }}</b></li>
+  </ul>
+  <hr>
+  <ul>
+    <li v-for="num of 4">{{ num }}</li>
+  </ul>
+  <hr>
+  <ul>
+    <li v-for="(value, k, index, a) of oneobjpeople">{{ k }}: {{ value }} <em>[{{ index + 1 }}]</em> <b>{{ a }}</b></li>
+  </ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+  var app = new Vue({
+  el: '#app',
+  data: {
+    people: [
+      'Andrey',
+      'Ivan',
+      'Anna'
+    ],
+    objpeople: [
+      {name: 'Vlad', age: 20},
+      {name: 'Petr', age: 28},
+      {name: 'Alisa', age: 18},
+    ],
+    oneobjpeople: {
+      name: 'Vlad', age: 20, job: "Frontend"
+    }
+  },
+  computed: {
+
+  },
+  methods: {
+
+  }
+})
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue JS</title>x
+</head>
+<body>
+
+<div id="app">
+  <h1>String: {{ name }}</h1>
+  <h1>Sum:{{ 10+60 }}</h1>
+  <h1>Number: {{ number }}</h1>
+  <h1>Method: {{ sayky() }}</h1>
+  <h1>Тернарное выражение: {{ ok ? 'I am ok' : 'I am not ok' }}</h1>
+  <h1>Function: {{ string.split(' ').reverse().join(' ') }}</h1>
+  <p></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+  var app = new Vue({
+  el: '#app',
+  data: {
+    name: 'Hello Vue!',
+    number: 100,
+    ok: false,
+    string: 'My name is Artem'
+  },
+  methods: {
+    sayky: function () {
+      return 'Ky ky' //Функцию, которую можно привести к строке (Важно!)
+    }
+  }
+})
+</script>
+
+</body>
+</html>
