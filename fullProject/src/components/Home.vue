@@ -3,9 +3,9 @@
     <v-container fluid>
       <v-layout row>
         <v-flex xs12>
-          <v-carousel>
+          <v-carousel v-if="promoAds">
             <v-carousel-item
-              v-for="item in items"
+              v-for="item in promoAds"
               :key="item.id"
               :src="item.imgSrc"
               :title="item.title"
@@ -13,6 +13,7 @@
             >
               <div class="carousel-link">
                 <v-btn
+                  flat
                   class="amber darken-2"
                   :to="'/add/' + item.id"
                 >{{ item.title }}</v-btn>
@@ -25,7 +26,7 @@
     <v-container grid-list-lg>
       <v-layout row wrap>
         <v-flex
-          v-for="item of items"
+          v-for="item of ads"
           :key="item.id"
           xs12 sm6 md4 lg3
         >
@@ -45,7 +46,7 @@
               </v-img>
               <v-card-title>
                 <div>
-                  <span class="grey--text">ID: {{ item.id }}</span><br>
+                  <!--<span class="grey&#45;&#45;text">ID: {{ item.id }}</span><br>-->
                   <span>{{ item.description }}</span>
                 </div>
               </v-card-title>
@@ -63,38 +64,12 @@
 
 <script>
 export default {
-  data () {
-    return {
-      items: [
-        {
-          title: 'Goods 1',
-          description: 'Description 1',
-          promo: false,
-          imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-          id: '001'
-        },
-        {
-          title: 'Goods 2',
-          description: 'Description 2',
-          promo: false,
-          imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-          id: '002'
-        },
-        {
-          title: 'Goods 3',
-          description: 'Description 3',
-          promo: true,
-          imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          id: '003'
-        },
-        {
-          title: 'Goods 4',
-          description: 'Description 3',
-          promo: true,
-          imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-          id: '004'
-        }
-      ]
+  computed: {
+    promoAds () {
+      return this.$store.getters.promoAds
+    },
+    ads () {
+      return this.$store.getters.ads
     }
   }
 }

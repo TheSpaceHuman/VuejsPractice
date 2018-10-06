@@ -13,17 +13,6 @@
             @blur="$v.title.$touch()"
             class="mb-4"
           ></v-text-field>
-          <!--<v-text-field
-            class="mb-3"
-            v-model="description"
-            :error-messages="descriptionErrors"
-            multi-line
-            label="Description"
-            type="text"
-            required
-            @input="$v.description.$touch()"
-            @blur="$v.description.$touch()"
-          ></v-text-field>-->
           <v-textarea
             class="mb-3"
             v-model="description"
@@ -56,16 +45,17 @@
           </v-layout>
 
           <v-checkbox
-            v-model="checkbox"
+            v-model="promo"
             color="orange"
-            :error-messages="checkboxErrors"
+            :error-messages="promoErrors"
             label="Ad to promo?"
             required
-            @change="$v.checkbox.$touch()"
-            @blur="$v.checkbox.$touch()"
+
+            @change="promoChange"
+            @blur="$v.promo.$touch()"
           ></v-checkbox>
 
-          <v-btn @click="submit" color="amber" :disabled="$v.title.$invalid || $v.description.$invalid">Create ad</v-btn>
+          <v-btn @click="createAd" color="amber" :disabled="$v.title.$invalid || $v.description.$invalid">Create ad</v-btn>
           <v-btn @click="clear" color="yellow accent-1">clear</v-btn>
         </form>
       </v-flex>
@@ -83,22 +73,22 @@ export default {
   validations: {
     title: { required, maxLength: maxLength(15) },
     description: { required },
-    checkbox: { required }
+    promo: { required }
   },
 
   data: () => ({
     title: '',
     description: '',
-    checkbox: false,
+    promo: false,
     loader: null,
     loading: false
   }),
 
   computed: {
-    checkboxErrors () {
+    promoErrors () {
       const errors = []
-      if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.required && errors.push('You must agree to continue!')
+      if (!this.$v.promo.$dirty) return errors
+      !this.$v.promo.required && errors.push('You must agree to continue!')
       return errors
     },
     titleErrors () {
@@ -124,10 +114,21 @@ export default {
       this.$v.$reset()
       this.title = ''
       this.description = ''
-      this.checkbox = false
+      this.promo = false
     },
     createAd () {
-      //
+      const ad = {
+        title: this.title,
+        description: this.description,
+        promo: this.promo,
+        imgSrc: 'https://cdn-images-1.medium.com/max/1600/1*WNPicrz6DJegizpj4VY58Q.jpeg'
+      }
+      // console.log(ad)
+      this.$store.dispatch('createAd', ad)
+    },
+    promoChange () {
+      this.promo = true
+      this.$v.promo.$touch()
     }
   },
   watch: {

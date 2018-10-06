@@ -4,7 +4,7 @@
       <v-flex xs12 sm8 md6>
         <v-card class="elevation-12">
           <v-toolbar color="amber">
-            <v-toolbar-title>Login form</v-toolbar-title>
+            <v-toolbar-title>Login</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form ref="form" v-model="valid" validation>
@@ -33,7 +33,8 @@
               <v-btn
                 color="amber"
                 @click="submit"
-                :disabled="!valid"
+                :loading="loading"
+                :disabled="!valid || loading"
               >Login</v-btn>
           </v-card-actions>
         </v-card>
@@ -59,6 +60,11 @@ export default {
       ]
     }
   },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
@@ -67,8 +73,18 @@ export default {
           password: this.password
         }
         // Native form submission is not yet supported
-        console.log(user)
+        // console.log(user)
+        this.$store.dispatch('loginUser', user)
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(err => console.log(err))
       }
+    }
+  },
+  created () {
+    if (this.$route.query['loginError']) {
+      this.$store.dispatch('setError', 'Pleas login!')
     }
   }
 
