@@ -4,11 +4,10 @@ import ads from './ads'
 import user from './user'
 import shared from './shared'
 
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    ads, user, shared,
+    ads, user, shared
   }
 })

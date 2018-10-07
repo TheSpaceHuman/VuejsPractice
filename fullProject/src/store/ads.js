@@ -1,7 +1,7 @@
 import * as fb from 'firebase'
 
 class Ad {
-  constructor (title, description, ownerId , imgSrc = '', promo = false, id = null) {
+  constructor (title, description, ownerId, imgSrc = '', promo = false, id = null) {
     this.title = title
     this.description = description
     this.ownerId = ownerId
@@ -47,6 +47,9 @@ export default {
   mutations: {
     createAd (state, payload) {
       state.ads.push(payload)
+    },
+    loadAds (state, payload) {
+      state.ads = payload
     }
   },
   actions: {
@@ -54,10 +57,59 @@ export default {
       commit('clearError')
       commit('setLoading', true)
 
+      const image = payload.image
+      const imageExt = image.name.slice(image.name.lastIndexOf('.'))
+
+      const fileData = await fb.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
+      const imgSrc = fileData.metadata.downloadURLs[0]
+
+      await fb.database().ref('ads').child(ad.key).update({
+        imgSrc
+      })
       try {
-        const newAd = new Ad (payload.title, payload.description, getters.user.id, payload.imgSrc, payload.promo)
-        const fbValue = await fb.database().ref('ads').push(newAd)
-        console.log(fbValue)
+        const newAd = new Ad(
+          payload.title,
+          payload.description,
+          getters.user.id,
+          '',
+          payload.promo
+        )
+
+        const ad = await fb.database().ref('ads').push(newAd)
+
+        commit('setLoading', false)
+        commit('createAd', {
+          ...newAd,
+          id: ad.key,
+          imgSrc
+        })
+        // console.log(fbValue)
+      } catch (error) {
+        commit('setError', error.message)
+        commit('setLoading', false)
+        throw error
+      }
+    },
+    async fetchAds ({commit}, playload) {
+      commit('clearError')
+      commit('setLoading', true)
+
+      const resultAds = []
+
+      try {
+        const fbVal = await fb.database().ref('ads').once('value')
+        // console.log(fbVal)
+        const ads = fbVal.val()
+        console.log(ads)
+
+        Object.keys(ads).forEach(key => {
+          const ad = ads[key]
+          resultAds.push(
+            new Ad(ad.title, ad.description, ad.ownerId, ad.imgSrc, ad.promo, key)
+          )
+        })
+        commit('loadAds', resultAds)
+        commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
         commit('setLoading', false)
@@ -73,6 +125,15 @@ export default {
       return state.ads.filter(ad => {
         return ad.promo
       })
+    },
+    promoCounter (state) {
+      let promoCounter = 0
+      const arrPromo = state.ads
+      for (let itemPromo of arrPromo)
+        if (itemPromo.promo === true) {
+          promoCounter++
+        }
+      return promoCounter
     },
     myAds (state) {
       return state.ads

@@ -1,25 +1,27 @@
 <template>
-  <div>
+  <div v-if="!loading">
     <v-container fluid>
       <v-layout row>
         <v-flex xs12>
-          <v-carousel v-if="promoAds">
-            <v-carousel-item
-              v-for="item in promoAds"
-              :key="item.id"
-              :src="item.imgSrc"
-              :title="item.title"
-              :description="item.description"
-            >
-              <div class="carousel-link">
-                <v-btn
-                  flat
-                  class="amber darken-2"
-                  :to="'/add/' + item.id"
-                >{{ item.title }}</v-btn>
-              </div>
-            </v-carousel-item>
-          </v-carousel>
+          <template v-if="promoCounter > 0">
+            <v-carousel>
+              <v-carousel-item
+                v-for="item in promoAds"
+                :key="item.id"
+                :src="item.imgSrc"
+                :title="item.title"
+                :description="item.description"
+              >
+                <div class="carousel-link">
+                  <v-btn
+                    flat
+                    class="amber darken-2"
+                    :to="'/add/' + item.id"
+                  >{{ item.title }}</v-btn>
+                </div>
+              </v-carousel-item>
+            </v-carousel>
+          </template>
         </v-flex>
       </v-layout>
     </v-container>
@@ -52,10 +54,24 @@
               </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn flat color="amber">Share</v-btn>
+                <v-btn flat color="amber" :to="'/add/' + item.id">Info</v-btn>
                 <v-btn flat color="amber darken-4">Buy</v-btn>
               </v-card-actions>
             </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
+  <div v-else>
+    <v-container>
+      <v-layout row>
+        <v-flex xs12 class="text-xs-center mt-5">
+          <v-progress-circular
+            :size="130"
+            :width="8"
+            color="amber"
+            indeterminate
+          ></v-progress-circular>
         </v-flex>
       </v-layout>
     </v-container>
@@ -68,8 +84,14 @@ export default {
     promoAds () {
       return this.$store.getters.promoAds
     },
+    promoCounter () {
+      return this.$store.getters.promoCounter
+    },
     ads () {
       return this.$store.getters.ads
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   }
 }

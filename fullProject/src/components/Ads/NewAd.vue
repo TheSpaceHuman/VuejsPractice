@@ -29,18 +29,22 @@
           ></v-textarea>
               <v-btn
                 block
-                :loading="loading"
-                :disabled="loading"
                 color="yellow"
                 class="mb-3"
-                @click.native="loader = 'loading'"
+                @click="triggerUpload"
               >
                 Upload
                 <v-icon right dark>cloud_upload</v-icon>
               </v-btn>
+            <input
+              ref="fileInput"
+              type="file"
+              style="display: none;"
+              @change="onFileChange"
+              accept="image/*">
           <v-layout justify-center>
             <v-flex>
-              <img src="" alt="" width="100%">
+              <img :src="imgSrc" alt="" width="100%" v-if="imgSrc">
             </v-flex>
           </v-layout>
 
@@ -55,8 +59,13 @@
             @blur="$v.promo.$touch()"
           ></v-checkbox>
 
-          <v-btn @click="createAd" color="amber" :disabled="$v.title.$invalid || $v.description.$invalid">Create ad</v-btn>
+          <v-btn
+            @click="createAd"
+            color="amber"
+            :loading="loading"
+            :disabled="$v.title.$invalid || $v.description.$invalid || loading">Create ad</v-btn>
           <v-btn @click="clear" color="yellow accent-1">clear</v-btn>
+
         </form>
       </v-flex>
     </v-layout>
@@ -81,7 +90,8 @@ export default {
     description: '',
     promo: false,
     loader: null,
-    loading: false
+    image: null,
+    imgSrc: ''
   }),
 
   computed: {
@@ -103,6 +113,9 @@ export default {
       if (!this.$v.description.$dirty) return errors
       !this.$v.description.required && errors.push('Description is required')
       return errors
+    },
+    loading () {
+      return this.$store.getters.loading
     }
   },
 
@@ -121,14 +134,30 @@ export default {
         title: this.title,
         description: this.description,
         promo: this.promo,
-        imgSrc: ''
+        image: this.image
       }
       // console.log(ad)
       this.$store.dispatch('createAd', ad)
+        .then(() => {
+          this.$router.push('/list')
+        })
+        .catch(() => {})
     },
     promoChange () {
       this.promo = true
       this.$v.promo.$touch()
+    },
+    triggerUpload () {
+      this.$refs.fileInput.click()
+    },
+    onFileChange (event) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+      reader.onload = e => {
+        this.imgSrc = reader.result
+      }
+      reader.readAsDataURL(file)
+      this.image = file
     }
   },
   watch: {
