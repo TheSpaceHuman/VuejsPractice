@@ -40,7 +40,7 @@
               </v-btn>
           <v-layout justify-center>
             <v-flex>
-              <img src="https://cdn.vuetifyjs.com/images/carousel/bird.jpg" alt="" width="100%">
+              <img src="" alt="" width="100%">
             </v-flex>
           </v-layout>
 
@@ -121,7 +121,7 @@ export default {
         title: this.title,
         description: this.description,
         promo: this.promo,
-        imgSrc: 'https://cdn-images-1.medium.com/max/1600/1*WNPicrz6DJegizpj4VY58Q.jpeg'
+        imgSrc: ''
       }
       // console.log(ad)
       this.$store.dispatch('createAd', ad)
