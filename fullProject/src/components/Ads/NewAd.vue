@@ -2,19 +2,21 @@
   <v-container>
     <v-layout justify-center>
       <v-flex xs12 sm6>
-        <form>
+        <v-form  ref="form" validation v-model="valid">
           <v-text-field
-            v-model="title"
-            :error-messages="titleErrors"
+            name="title"
             label="Ad title"
-            color="orange"
+            type="text"
+            v-model="title"
             required
-            @input="$v.title.$touch()"
-            @blur="$v.title.$touch()"
+            :rules="[v => !!v || 'Title is required']"
+            color="orange"
             class="mb-4"
           ></v-text-field>
           <v-textarea
             class="mb-3"
+            name="description"
+            type="text"
             v-model="description"
             auto-grow
             box
@@ -23,9 +25,7 @@
             label="Description"
             rows="4"
             required
-            :error-messages="descriptionErrors"
-            @input="$v.description.$touch()"
-            @blur="$v.description.$touch()"
+            :rules="[v => !!v || 'Description is required']"
           ></v-textarea>
               <v-btn
                 block
@@ -44,108 +44,64 @@
               accept="image/*">
           <v-layout justify-center>
             <v-flex>
-              <img :src="imgSrc" alt="" width="100%" v-if="imgSrc">
+              <img :src="imageSrc" alt="" width="100%" v-if="imageSrc">
             </v-flex>
           </v-layout>
 
-          <v-checkbox
+          <v-switch
+            label="Ad to promo?"
             v-model="promo"
             color="orange"
-            :error-messages="promoErrors"
-            label="Ad to promo?"
-            required
-
-            @change="promoChange"
-            @blur="$v.promo.$touch()"
-          ></v-checkbox>
+          ></v-switch>
 
           <v-btn
             @click="createAd"
             color="amber"
             :loading="loading"
-            :disabled="$v.title.$invalid || $v.description.$invalid || loading">Create ad</v-btn>
-          <v-btn @click="clear" color="yellow accent-1">clear</v-btn>
+            :disabled="!valid || !image || loading">
+            Create ad
+          </v-btn>
 
-        </form>
+        </v-form>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { required, maxLength } from 'vuelidate/lib/validators'
 
 export default {
-  mixins: [validationMixin],
-
-  validations: {
-    title: { required, maxLength: maxLength(15) },
-    description: { required },
-    promo: { required }
-  },
-
   data: () => ({
     title: '',
     description: '',
     promo: false,
-    loader: null,
+    valid: false,
     image: null,
-    imgSrc: ''
+    imageSrc: ''
   }),
 
   computed: {
-    promoErrors () {
-      const errors = []
-      if (!this.$v.promo.$dirty) return errors
-      !this.$v.promo.required && errors.push('You must agree to continue!')
-      return errors
-    },
-    titleErrors () {
-      const errors = []
-      if (!this.$v.title.$dirty) return errors
-      !this.$v.title.maxLength && errors.push('Title must be at most 15 characters long')
-      !this.$v.title.required && errors.push('Title is required.')
-      return errors
-    },
-    descriptionErrors () {
-      const errors = []
-      if (!this.$v.description.$dirty) return errors
-      !this.$v.description.required && errors.push('Description is required')
-      return errors
-    },
     loading () {
       return this.$store.getters.loading
     }
   },
 
   methods: {
-    submit () {
-      this.$v.$touch()
-    },
-    clear () {
-      this.$v.$reset()
-      this.title = ''
-      this.description = ''
-      this.promo = false
-    },
     createAd () {
-      const ad = {
-        title: this.title,
-        description: this.description,
-        promo: this.promo,
-        image: this.image
+      if (this.$refs.form.validate() && this.image) {
+        const ad = {
+          title: this.title,
+          description: this.description,
+          promo: this.promo,
+          image: this.image
+        }
+        // console.log(ad)
+        this.$store.dispatch('createAd', ad)
+          .then(() => {
+            this.$router.push('/list')
+          })
+          .catch(() => {})
       }
-      // console.log(ad)
-      this.$store.dispatch('createAd', ad)
-        .then(() => {
-          this.$router.push('/list')
-        })
-        .catch(() => {})
-    },
-    promoChange () {
-      this.promo = true
-      this.$v.promo.$touch()
     },
     triggerUpload () {
       this.$refs.fileInput.click()
@@ -154,20 +110,10 @@ export default {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = e => {
-        this.imgSrc = reader.result
+        this.imageSrc = reader.result
       }
       reader.readAsDataURL(file)
       this.image = file
-    }
-  },
-  watch: {
-    loader () {
-      const l = this.loader
-      this[l] = !this[l]
-
-      setTimeout(() => (this[l] = false), 1000)
-
-      this.loader = null
     }
   }
 }

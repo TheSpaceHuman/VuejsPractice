@@ -14,7 +14,7 @@
                   width="100%"
                   height="100%"
                   :alt="ad.title"
-                  :src="ad.imgSrc">
+                  :src="ad.imageSrc">
                 </v-img>
               </v-flex>
               <v-flex xs8>

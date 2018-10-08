@@ -8,7 +8,7 @@
               <v-carousel-item
                 v-for="item in promoAds"
                 :key="item.id"
-                :src="item.imgSrc"
+                :src="item.imageSrc"
                 :title="item.title"
                 :description="item.description"
               >
@@ -36,7 +36,7 @@
               <v-img
                 class="white--text"
                 height="200px"
-                :src="item.imgSrc"
+                :src="item.imageSrc"
               >
                 <v-container fill-height fluid>
                   <v-layout fill-height>

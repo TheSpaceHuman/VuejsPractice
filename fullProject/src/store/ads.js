@@ -1,11 +1,11 @@
 import * as fb from 'firebase'
 
 class Ad {
-  constructor (title, description, ownerId, imgSrc = '', promo = false, id = null) {
+  constructor (title, description, ownerId, imageSrc = '', promo = false, id = null) {
     this.title = title
     this.description = description
     this.ownerId = ownerId
-    this.imgSrc = imgSrc
+    this.imageSrc = imageSrc
     this.promo = promo
     this.id = id
   }
@@ -15,31 +15,31 @@ export default {
   state: {
     ads: [
       {
-        title: 'Goods 1',
+        title: 'Porsche 2018',
         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam, quasi.',
-        promo: true,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+        promo: false,
+        imageSrc: 'http://www.cartube.co.il/images/stories/porche/p-911/2017/2018-Porsche911GT2RS-970px.jpg',
         id: '1'
       },
       {
-        title: 'Goods 2',
+        title: 'Audi 2018',
         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam, quasi.',
-        promo: true,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+        promo: false,
+        imageSrc: 'http://www.easterimagess.com/images/audi-a8-wallpaper/Audi-A8-Wide-2018.jpg',
         id: '2'
       },
       {
-        title: 'Goods 3',
+        title: 'BMW 2018',
         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam, quasi.',
-        promo: true,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+        promo: false,
+        imageSrc: 'http://www.droomtalk.com/wp-content/uploads/2018/01/4-2.jpg',
         id: '3'
       },
       {
-        title: 'Goods 4',
+        title: 'Ford Mustang GT-H',
         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam, quasi.',
         promo: false,
-        imgSrc: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+        imageSrc: 'https://www.topgear.com/sites/default/files/styles/16x9_1280w/public/images/news-article/2016/03/e68f15778c8387dcbe6c2c7c87dfe3c9/2016-ford-shelby-gt-h-hertz-001-1.jpg?itok=bOvEszGq',
         id: '4'
       }
     ]
@@ -56,16 +56,8 @@ export default {
     async createAd ({commit, getters}, payload) {
       commit('clearError')
       commit('setLoading', true)
-
       const image = payload.image
-      const imageExt = image.name.slice(image.name.lastIndexOf('.'))
 
-      const fileData = await fb.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
-      const imgSrc = fileData.metadata.downloadURLs[0]
-
-      await fb.database().ref('ads').child(ad.key).update({
-        imgSrc
-      })
       try {
         const newAd = new Ad(
           payload.title,
@@ -76,12 +68,20 @@ export default {
         )
 
         const ad = await fb.database().ref('ads').push(newAd)
+        const imageExt = image.name.slice(image.name.lastIndexOf('.'))
+
+        const fileData = await fb.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
+        const imageSrc = fileData.metadata.downloadURLs[0]
+
+        await fb.database().ref('ads').child(ad.key).update({
+          imageSrc
+        })
 
         commit('setLoading', false)
         commit('createAd', {
           ...newAd,
           id: ad.key,
-          imgSrc
+          imageSrc
         })
         // console.log(fbValue)
       } catch (error) {
@@ -105,7 +105,7 @@ export default {
         Object.keys(ads).forEach(key => {
           const ad = ads[key]
           resultAds.push(
-            new Ad(ad.title, ad.description, ad.ownerId, ad.imgSrc, ad.promo, key)
+            new Ad(ad.title, ad.description, ad.ownerId, ad.imageSrc, ad.promo, key)
           )
         })
         commit('loadAds', resultAds)
@@ -129,10 +129,11 @@ export default {
     promoCounter (state) {
       let promoCounter = 0
       const arrPromo = state.ads
-      for (let itemPromo of arrPromo)
+      for (let itemPromo of arrPromo) {
         if (itemPromo.promo === true) {
           promoCounter++
         }
+      }
       return promoCounter
     },
     myAds (state) {
